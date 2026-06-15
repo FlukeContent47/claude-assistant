@@ -1513,12 +1513,12 @@ init();
 // ══════════════════════════════════════════════════════════════════
 
 // Asana config — replace these with your actual IDs
-var ASANA_TOKEN = 'PAT';
-var ASANA_WORKSPACE = 'WORKSPACE';
+var ASANA_TOKEN = 'YOUR_ASANA_PAT_HERE';
+var ASANA_WORKSPACE = 'YOUR_WORKSPACE_ID';
 var ASANA_PROJECTS = {
-  design:  'DESIGN-PROJECT-ID',
-  martech: 'MARTECH-PROJECT-ID',
-  webops:  'WEBOPS-PROJECT-ID'
+  design:  'YOUR_DESIGN_TEAM_PROJECT_ID',
+  martech: 'YOUR_MARKETING_AUTOMATION_PROJECT_ID',
+  webops:  'YOUR_WEB_OPS_PROJECT_ID'
 };
 
 // Content-type routing map: which paths are available for each template
@@ -1885,7 +1885,11 @@ function runStyleReview() {
 
   fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -2378,7 +2382,11 @@ function translateOne(langCode) {
 
   return fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4000,
@@ -2405,10 +2413,12 @@ function translateOne(langCode) {
       _generatedHTML[langCode] = html;
       setLangStatus(langCode, 100, 'Done');
     } catch(e) {
+      console.error('Translation parse error:', e, 'Raw response:', text);
       setLangStatus(langCode, 100, 'Error');
     }
   })
-  .catch(function() {
+  .catch(function(err) {
+    console.error('Translation API error:', err);
     setLangStatus(langCode, 100, 'Error');
   });
 }
